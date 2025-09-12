@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/capacitor-community/date-picker/compare/v6.0.0...v7.1.0) (2025-09-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* Update to Capacitor 7 (#92)
+
+### Features
+
+* **ios:** Add SPM support ([#100](https://github.com/capacitor-community/date-picker/issues/100)) ([612d140](https://github.com/capacitor-community/date-picker/commit/612d140cded8749b88d82170939a316e21eed9e8))
+* Update to Capacitor 7 ([#92](https://github.com/capacitor-community/date-picker/issues/92)) ([22c4c4a](https://github.com/capacitor-community/date-picker/commit/22c4c4a3f93fbed15710c842a5b41393ae0ac839))
+
+
+### Bug Fixes
+
+* **ios:** replace deprecated getConfigValue ([#96](https://github.com/capacitor-community/date-picker/issues/96)) ([ec75eb1](https://github.com/capacitor-community/date-picker/commit/ec75eb114de741182f8fb883b25c6523d7512dc3))
+* Remove unused files from res folder ([#93](https://github.com/capacitor-community/date-picker/issues/93)) ([e90d93a](https://github.com/capacitor-community/date-picker/commit/e90d93aab9909d87873d28367a1f5906d466f38a))
+
 ## [6.0.0](https://github.com/capacitor-community/date-picker/compare/v5.0.0...v6.0.0) (2024-05-03)
 
 
