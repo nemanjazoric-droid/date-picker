@@ -197,6 +197,9 @@ public class DatePickerPlugin: CAPPlugin, CAPBridgedPlugin {
         if let mergedDateAndTime = call.getObject("ios")?["mergedDateAndTime"] as? Bool {
             options.mergedDateAndTime = mergedDateAndTime
         }
+
+        let localeIdentifier = options.locale ?? "en_US_POSIX"
+
         if let date = call.getString("date") {
             options.date = Parse.dateFromString(date: date, format: options.format, locale: options.locale)
         }
