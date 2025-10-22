@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.2.1](https://github.com/capacitor-community/date-picker/compare/v7.2.0...v7.2.1) (2025-10-22)
+
 ## 7.2.0 (2025-10-22)
 
 
