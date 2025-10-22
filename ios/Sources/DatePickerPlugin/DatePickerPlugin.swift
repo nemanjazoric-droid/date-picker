@@ -198,13 +198,13 @@ public class DatePickerPlugin: CAPPlugin, CAPBridgedPlugin {
             options.mergedDateAndTime = mergedDateAndTime
         }
         if let date = call.getString("date") {
-            options.date = Parse.dateFromString(date: date, format: options.format)
+            options.date = Parse.dateFromString(date: date, format: options.format, locale: options.locale)
         }
         if let min = call.getString("min") {
-            options.min = Parse.dateFromString(date: min, format: options.format)
+            options.min = Parse.dateFromString(date: min, format: options.format, locale: options.locale)
         }
         if let max = call.getString("max") {
-            options.max = Parse.dateFromString(date: max, format: options.format)
+            options.max = Parse.dateFromString(date: max, format: options.format, locale: options.locale)
         }
 
         return options
