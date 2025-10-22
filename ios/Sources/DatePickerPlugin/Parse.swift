@@ -10,7 +10,7 @@
 
 import Foundation
 public class Parse {
-    public static func dateFromString(date: String, format: String? = nil, locale: String? = "en_US_POSIX", timezone: String? = nil) -> Date {
+    public static func dateFromString(date: String, format: String? = nil, locale: String = "en_US_POSIX", timezone: String? = nil) -> Date {
         let formatter = DateFormatter()
         if format != nil {
             formatter.dateFormat = format
