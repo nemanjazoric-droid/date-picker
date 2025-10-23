@@ -187,11 +187,8 @@ public class DatePicker {
             picker.preferredDatePickerStyle = .wheels
             picker.frame.origin.y = (alert.frame.height - buttonHeight - picker.frame.height) / 2
         }
-        if options.is24h {
-            picker.datePickerMode = UIDatePicker.Mode.countDownTimer
-        } else {
-            picker.datePickerMode = UIDatePicker.Mode.time
-        }
+        // Always use time mode; countdownTimer is not appropriate for time-of-day selection
+        picker.datePickerMode = UIDatePicker.Mode.time
         picker.frame.origin.x = (alert.frame.width - picker.frame.width) / 2
         picker.setDate(date, animated: true)
     }
