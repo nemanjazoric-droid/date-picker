@@ -220,13 +220,13 @@ public class DatePickerPlugin: CAPPlugin, CAPBridgedPlugin {
         let localeIdentifier = options.locale ?? "en_US_POSIX"
 
         if let date = call.getString("date") {
-            options.date = Parse.dateFromString(date: date, format: options.format, locale: options.locale)
+            options.date = Parse.dateFromString(date: date, format: options.format, locale: localeIdentifier)
         }
         if let min = call.getString("min") {
-            options.min = Parse.dateFromString(date: min, format: options.format, locale: options.locale)
+            options.min = Parse.dateFromString(date: min, format: options.format, locale: localeIdentifier)
         }
         if let max = call.getString("max") {
-            options.max = Parse.dateFromString(date: max, format: options.format, locale: options.locale)
+            options.max = Parse.dateFromString(date: max, format: options.format, locale: localeIdentifier)
         }
 
         return options
