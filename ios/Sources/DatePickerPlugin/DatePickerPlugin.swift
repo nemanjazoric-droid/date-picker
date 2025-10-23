@@ -58,7 +58,26 @@ public class DatePickerPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
         var obj: [String: Any] = [:]
-        obj["value"] = Parse.dateToString(date: self.instance.picker.date, format: self.instance.options.format)
+        // Ensure is24h preference is respected when formatting the returned value
+        var format = self.instance.options.format
+        if self.instance.options.is24h {
+            // Force 24h hours and drop AM/PM if present
+            format = format.replacingOccurrences(of: "h", with: "H")
+            format = format.replacingOccurrences(of: " a", with: "")
+            format = format.replacingOccurrences(of: "a", with: "")
+        } else {
+            // Force 12h hours and include AM/PM if not already present
+            format = format.replacingOccurrences(of: "H", with: "h")
+            if !format.contains("a") {
+                // Add space + AM/PM at the end if time component present
+                if format.contains("h") || format.contains("m") || format.contains("s") || format.contains("S") {
+                    format += " a"
+                }
+            }
+        }
+        let localeId = self.instance.options.locale ?? "en_US_POSIX"
+        let value = Parse.dateToString(date: self.instance.picker.date, format: format, locale: Locale(identifier: localeId))
+        obj["value"] = value
         self.call.resolve(obj)
         self.dismissInstance()
     }
