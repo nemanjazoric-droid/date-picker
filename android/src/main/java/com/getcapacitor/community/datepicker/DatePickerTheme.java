@@ -12,7 +12,7 @@ public class DatePickerTheme {
      */
     public static int get(String theme, Context context) {
         int safeLight = R.style.MaterialLightTheme;
-        int safeDark = R.style.MateriaDarkTheme;
+        int safeDark = R.style.MaterialDarkTheme;
 
         if (theme == null || theme.trim().isEmpty()) return safeLight;
 
