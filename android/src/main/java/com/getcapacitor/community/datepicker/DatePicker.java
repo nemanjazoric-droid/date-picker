@@ -101,15 +101,59 @@ public class DatePicker {
             constraintsBuilder.setEnd(toUtcMidnight(options.max));
         }
 
-        // Build MaterialDatePicker once, without extra fallbacks
-        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
-        builder.setSelection(toUtcMidnight(calendar.getTime()));
-        builder.setCalendarConstraints(constraintsBuilder.build());
-        if (options.title != null) builder.setTitleText(options.title);
-        if (options.doneText != null) builder.setPositiveButtonText(options.doneText);
-        if (options.cancelText != null) builder.setNegativeButtonText(options.cancelText);
-        if (theme != 0) builder.setTheme(theme);
-        MaterialDatePicker<Long> datePicker = builder.build();
+        // Try to build MaterialDatePicker with multiple safe fallbacks to avoid crashes
+        MaterialDatePicker<Long> datePicker = null;
+        Exception lastError = null;
+
+        // Attempt 1: use resolved theme (if any)
+        try {
+            MaterialDatePicker.Builder<Long> b1 = MaterialDatePicker.Builder.datePicker();
+            b1.setSelection(toUtcMidnight(calendar.getTime()));
+            b1.setCalendarConstraints(constraintsBuilder.build());
+            if (options.title != null) b1.setTitleText(options.title);
+            if (options.doneText != null) b1.setPositiveButtonText(options.doneText);
+            if (options.cancelText != null) b1.setNegativeButtonText(options.cancelText);
+            if (theme != 0) b1.setTheme(theme);
+            datePicker = b1.build();
+        } catch (Exception e) {
+            lastError = e;
+        }
+
+        // Attempt 2: try safe light theme
+        if (datePicker == null) {
+            try {
+                MaterialDatePicker.Builder<Long> b2 = MaterialDatePicker.Builder.datePicker();
+                b2.setSelection(toUtcMidnight(calendar.getTime()));
+                b2.setCalendarConstraints(constraintsBuilder.build());
+                if (options.title != null) b2.setTitleText(options.title);
+                if (options.doneText != null) b2.setPositiveButtonText(options.doneText);
+                if (options.cancelText != null) b2.setNegativeButtonText(options.cancelText);
+                b2.setTheme(R.style.MaterialLightTheme);
+                datePicker = b2.build();
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        // Attempt 3: build without any theme (use host defaults)
+        if (datePicker == null) {
+            try {
+                MaterialDatePicker.Builder<Long> b3 = MaterialDatePicker.Builder.datePicker();
+                b3.setSelection(toUtcMidnight(calendar.getTime()));
+                b3.setCalendarConstraints(constraintsBuilder.build());
+                if (options.title != null) b3.setTitleText(options.title);
+                if (options.doneText != null) b3.setPositiveButtonText(options.doneText);
+                if (options.cancelText != null) b3.setNegativeButtonText(options.cancelText);
+                datePicker = b3.build();
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        if (datePicker == null) {
+            callback.reject(lastError != null ? lastError.getMessage() : "Failed to open date picker");
+            return;
+        }
 
         // Handle result
         datePicker.addOnPositiveButtonClickListener(selection -> {
