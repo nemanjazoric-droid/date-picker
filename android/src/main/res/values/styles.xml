@@ -1,62 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- ========================= -->
-    <!-- APP BASE THEME -->
-    <!-- ========================= -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorSecondary">@color/colorAccent</item>
+    <!-- Safe full dialog themes for MaterialDatePicker.
+         Use full MaterialComponents dialog themes so all required base attributes resolve,
+         and explicitly apply the MaterialCalendar overlay via materialCalendarTheme. -->
+    <style name="MaterialLightTheme" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
-    <!-- ========================= -->
-    <!-- DATE PICKER BACKGROUND (RADIUS) -->
-    <!-- ========================= -->
-    <style name="CustomCalendarStyle"
-           parent="Widget.MaterialComponents.MaterialCalendar">
-
-        <item name="android:background">@drawable/calendar_bg</item>
-
+    <style name="MaterialDarkTheme" parent="Theme.MaterialComponents.Dialog">
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
-    <!-- ========================= -->
-    <!-- DATE PICKER OVERLAY -->
-    <!-- ========================= -->
-    <style name="CustomDatePickerTheme"
-           parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
-
-        <item name="materialCalendarStyle">@style/CustomCalendarStyle</item>
-
-    </style>
-
-    <!-- ========================= -->
-    <!-- LIGHT THEME -->
-    <!-- ========================= -->
-    <style name="MaterialLightTheme"
-           parent="Theme.MaterialComponents.Light.Dialog">
-
-        <item name="materialCalendarTheme">@style/CustomDatePickerTheme</item>
-
-    </style>
-
-    <!-- ========================= -->
-    <!-- DARK THEME -->
-    <!-- ========================= -->
-    <style name="MaterialDarkTheme"
-           parent="Theme.MaterialComponents.Dialog">
-
-        <item name="materialCalendarTheme">@style/CustomDatePickerTheme</item>
-
-    </style>
-
-    <!-- ========================= -->
-    <!-- OPTIONAL (SAFE) -->
-    <!-- ========================= -->
-    <style name="SpinnerDarkTheme"
-           parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
-
-    <style name="SpinnerLightTheme"
-           parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
-
+    <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
+    <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
+    <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
 </resources>
