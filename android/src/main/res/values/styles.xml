@@ -7,7 +7,7 @@
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
-    <style name="MateriaDarkTheme" parent="Theme.MaterialComponents.Dialog">
+    <style name="MaterialDarkTheme" parent="Theme.MaterialComponents.Dialog">
         <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
