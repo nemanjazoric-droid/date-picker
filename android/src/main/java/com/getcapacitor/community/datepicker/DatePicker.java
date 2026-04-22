@@ -125,7 +125,7 @@ public class DatePicker {
         try {
             activity.runOnUiThread(() -> {
                 try {
-                    picker.show(activity.getSupportFragmentManager(), "TIME_PICKER");
+                    finalPicker.show(activity.getSupportFragmentManager(), "TIME_PICKER");
                 } catch (Exception e) {
                     callback.reject(e.getMessage());
                 }
