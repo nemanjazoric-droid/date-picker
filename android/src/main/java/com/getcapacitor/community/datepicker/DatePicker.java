@@ -35,37 +35,48 @@ public class DatePicker {
         }
     }
 
+    /**
+     * Opens a Material design time picker and resolves the result via the provided callback.
+     *
+     * Behavior
+     * - Initializes the internal Calendar from options.date when provided.
+     * - Honors 12/24 hour mode based on options.is24h using Material TimeFormat.
+     * - Applies optional title (options.title) to the picker.
+     * - Avoids overriding positive/negative button texts (not reliably supported by MaterialTimePicker).
+     * - Avoids applying full dialog themes. MaterialTimePicker expects a ThemeOverlay; relying on the host
+     *   app theme here is safer and prevents crashes due to missing attributes.
+     * - Returns the formatted date string on positive, or null on negative/cancel.
+     */
     public void launchTime(DatePickerResolve callback) {
         // Initialize calendar with provided date if available
         if (options.date != null) {
             calendar.setTime(options.date);
         }
 
-        // Determine 12/24h format
+        // Determine 12/24h format expected by MaterialTimePicker
         int timeFormat = options.is24h
             ? TimeFormat.CLOCK_24H
             : TimeFormat.CLOCK_12H;
 
-        // Try to build MaterialTimePicker with safe fallbacks to avoid crashes
+        // Build MaterialTimePicker with minimal theming to avoid crashes on OEM/custom themes
         MaterialTimePicker picker = null;
         Exception lastError = null;
 
-        // Attempt 1: use resolved theme (if any)
+        // Attempt 1: build normally (no explicit full dialog theme)
         try {
             MaterialTimePicker.Builder b1 = new MaterialTimePicker.Builder();
             b1.setTimeFormat(timeFormat);
             b1.setHour(calendar.get(Calendar.HOUR_OF_DAY));
             b1.setMinute(calendar.get(Calendar.MINUTE));
             if (options.title != null) b1.setTitleText(options.title);
-            if (options.doneText != null) b1.setPositiveButtonText(options.doneText);
-            if (options.cancelText != null) b1.setNegativeButtonText(options.cancelText);
-            if (theme != 0) b1.setTheme(theme);
+            // Do NOT set custom positive/negative texts; not supported across all Material versions.
+            // Do NOT apply full dialog themes; TimePicker expects a ThemeOverlay and wrong theme may crash.
             picker = b1.build();
         } catch (Exception e) {
             lastError = e;
         }
 
-        // Attempt 2: try safe light theme
+        // Attempt 2: retry with a fresh builder as a minimal fallback
         if (picker == null) {
             try {
                 MaterialTimePicker.Builder b2 = new MaterialTimePicker.Builder();
@@ -73,41 +84,25 @@ public class DatePicker {
                 b2.setHour(calendar.get(Calendar.HOUR_OF_DAY));
                 b2.setMinute(calendar.get(Calendar.MINUTE));
                 if (options.title != null) b2.setTitleText(options.title);
-                if (options.doneText != null) b2.setPositiveButtonText(options.doneText);
-                if (options.cancelText != null) b2.setNegativeButtonText(options.cancelText);
-                b2.setTheme(R.style.MaterialLightTheme);
+                // Leave other settings to defaults for compatibility
                 picker = b2.build();
             } catch (Exception e) {
                 lastError = e;
             }
         }
 
-        // Attempt 3: build without any theme (use host defaults)
         if (picker == null) {
-            try {
-                MaterialTimePicker.Builder b3 = new MaterialTimePicker.Builder();
-                b3.setTimeFormat(timeFormat);
-                b3.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-                b3.setMinute(calendar.get(Calendar.MINUTE));
-                if (options.title != null) b3.setTitleText(options.title);
-                if (options.doneText != null) b3.setPositiveButtonText(options.doneText);
-                if (options.cancelText != null) b3.setNegativeButtonText(options.cancelText);
-                picker = b3.build();
-            } catch (Exception e) {
-                lastError = e;
-            }
-        }
-
-        if (picker == null) {
+            // If both attempts failed, reject with the last error message (if any)
             callback.reject(lastError != null ? lastError.getMessage() : "Failed to open time picker");
             return;
         }
 
-        // Attach listeners
+        // Listeners: resolve on positive, return null on negative/cancel
         MaterialTimePicker finalPicker = picker;
         picker.addOnPositiveButtonClickListener(v -> {
             int hour = finalPicker.getHour();
             int minute = finalPicker.getMinute();
+            // Keep current Y/M/D but update H/M with chosen values
             calendar.set(
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -115,30 +110,52 @@ public class DatePicker {
                 hour,
                 minute
             );
+            // Format according to options.format and resolve
             callback.resolve(Parse.dateToString(calendar.getTime(), options.format));
         });
         picker.addOnNegativeButtonClickListener(v -> callback.resolve(null));
         picker.addOnCancelListener(dialog -> callback.resolve(null));
 
-        // Show via FragmentActivity
+        // Show via FragmentActivity on the UI thread to avoid lifecycle crashes
         androidx.fragment.app.FragmentActivity activity = toFragmentActivity(context);
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             callback.resolve(null);
             return;
         }
         try {
-            picker.show(activity.getSupportFragmentManager(), "TIME_PICKER");
+            activity.runOnUiThread(() -> {
+                try {
+                    picker.show(activity.getSupportFragmentManager(), "TIME_PICKER");
+                } catch (Exception e) {
+                    callback.reject(e.getMessage());
+                }
+            });
         } catch (Exception e) {
             callback.reject(e.getMessage());
         }
     }
 
+    /**
+     * Opens a Material design date picker and resolves the result via the provided callback.
+     *
+     * Behavior
+     * - Initializes the internal Calendar from options.date when provided.
+     * - Applies min/max constraints (inclusive) if options.min/options.max are set. Values are normalized
+     *   to UTC midnight because MaterialDatePicker expects UTC-based epoch millis.
+     * - Applies optional title and custom positive/negative button texts (supported by MaterialDatePicker).
+     * - Uses a safe theming strategy with small fallbacks to avoid crashes on devices/themes that miss
+     *   certain attributes. Falls back to a bundled light dialog theme, then to host defaults.
+     * - If mode is "dateAndTime", chains to launchTime after the user picks the date; otherwise resolves
+     *   the formatted date string immediately.
+     */
     public void launchDate(DatePickerResolve callback) {
+        // Initialize calendar with provided date if available
         if (options.date != null) {
             calendar.setTime(options.date);
         }
 
-        // Build calendar constraints based on min/max
+        // Build calendar constraints based on min/max. Normalize to UTC midnight for correctness
+        // because MaterialDatePicker operates on UTC epoch millis.
         CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
         if (options.min != null) {
             constraintsBuilder.setStart(toUtcMidnight(options.min));
@@ -147,11 +164,11 @@ public class DatePicker {
             constraintsBuilder.setEnd(toUtcMidnight(options.max));
         }
 
-        // Try to build MaterialDatePicker with multiple safe fallbacks to avoid crashes
+        // Build MaterialDatePicker with a few safe fallbacks (theme -> bundled light -> no theme)
         MaterialDatePicker<Long> datePicker = null;
         Exception lastError = null;
 
-        // Attempt 1: use resolved theme (if any)
+        // Attempt 1: use resolved theme (if any). MaterialDatePicker supports full dialog themes safely.
         try {
             MaterialDatePicker.Builder<Long> b1 = MaterialDatePicker.Builder.datePicker();
             b1.setSelection(toUtcMidnight(calendar.getTime()));
@@ -165,7 +182,7 @@ public class DatePicker {
             lastError = e;
         }
 
-        // Attempt 2: try safe light theme
+        // Attempt 2: try safe light theme from this library, which declares calendar overlays
         if (datePicker == null) {
             try {
                 MaterialDatePicker.Builder<Long> b2 = MaterialDatePicker.Builder.datePicker();
@@ -181,7 +198,7 @@ public class DatePicker {
             }
         }
 
-        // Attempt 3: build without any theme (use host defaults)
+        // Attempt 3: build without any explicit theme (use host defaults)
         if (datePicker == null) {
             try {
                 MaterialDatePicker.Builder<Long> b3 = MaterialDatePicker.Builder.datePicker();
@@ -197,21 +214,24 @@ public class DatePicker {
         }
 
         if (datePicker == null) {
+            // If all attempts failed, reject with the last error message (if any)
             callback.reject(lastError != null ? lastError.getMessage() : "Failed to open date picker");
             return;
         }
 
-        // Handle result
+        // Handle result selection
         datePicker.addOnPositiveButtonClickListener(selection -> {
             if (selection == null) {
                 callback.resolve(null);
                 return;
             }
-            // Convert UTC millis at midnight to local calendar date
+            // Convert UTC millis at midnight to a local date in our Calendar
             Calendar utcCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             utcCal.setTimeInMillis(selection);
             calendar.set(utcCal.get(Calendar.YEAR), utcCal.get(Calendar.MONTH), utcCal.get(Calendar.DAY_OF_MONTH));
 
+            // If the overall mode requires time as well, reuse the selected date as the base
+            // and then open the time picker. Otherwise, resolve immediately.
             if ("dateAndTime".equals(options.mode)) {
                 options.date = calendar.getTime();
                 launchTime(callback);
@@ -220,10 +240,11 @@ public class DatePicker {
             }
         });
 
+        // Resolve null if user cancels or presses negative
         datePicker.addOnNegativeButtonClickListener(v -> callback.resolve(null));
         datePicker.addOnCancelListener(dialog -> callback.resolve(null));
 
-        // Show safely via FragmentActivity
+        // Show safely via FragmentActivity (MaterialDatePicker manages its own dialog fragment)
         FragmentActivity activity = toFragmentActivity(context);
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             callback.resolve(null);
