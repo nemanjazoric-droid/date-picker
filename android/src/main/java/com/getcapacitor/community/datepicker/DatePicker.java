@@ -46,20 +46,60 @@ public class DatePicker {
             ? TimeFormat.CLOCK_24H
             : TimeFormat.CLOCK_12H;
 
-        // Build MaterialTimePicker
-        MaterialTimePicker picker;
+        // Try to build MaterialTimePicker with safe fallbacks to avoid crashes
+        MaterialTimePicker picker = null;
+        Exception lastError = null;
+
+        // Attempt 1: use resolved theme (if any)
         try {
-            MaterialTimePicker.Builder builder = new MaterialTimePicker.Builder();
-            builder.setTimeFormat(timeFormat);
-            builder.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-            builder.setMinute(calendar.get(Calendar.MINUTE));
-            if (options.title != null) builder.setTitleText(options.title);
-            if (options.doneText != null) builder.setPositiveButtonText(options.doneText);
-            if (options.cancelText != null) builder.setNegativeButtonText(options.cancelText);
-            if (theme != 0) builder.setTheme(theme);
-            picker = builder.build();
+            MaterialTimePicker.Builder b1 = new MaterialTimePicker.Builder();
+            b1.setTimeFormat(timeFormat);
+            b1.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+            b1.setMinute(calendar.get(Calendar.MINUTE));
+            if (options.title != null) b1.setTitleText(options.title);
+            if (options.doneText != null) b1.setPositiveButtonText(options.doneText);
+            if (options.cancelText != null) b1.setNegativeButtonText(options.cancelText);
+            if (theme != 0) b1.setTheme(theme);
+            picker = b1.build();
         } catch (Exception e) {
-            callback.reject(e.getMessage());
+            lastError = e;
+        }
+
+        // Attempt 2: try safe light theme
+        if (picker == null) {
+            try {
+                MaterialTimePicker.Builder b2 = new MaterialTimePicker.Builder();
+                b2.setTimeFormat(timeFormat);
+                b2.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+                b2.setMinute(calendar.get(Calendar.MINUTE));
+                if (options.title != null) b2.setTitleText(options.title);
+                if (options.doneText != null) b2.setPositiveButtonText(options.doneText);
+                if (options.cancelText != null) b2.setNegativeButtonText(options.cancelText);
+                b2.setTheme(R.style.MaterialLightTheme);
+                picker = b2.build();
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        // Attempt 3: build without any theme (use host defaults)
+        if (picker == null) {
+            try {
+                MaterialTimePicker.Builder b3 = new MaterialTimePicker.Builder();
+                b3.setTimeFormat(timeFormat);
+                b3.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+                b3.setMinute(calendar.get(Calendar.MINUTE));
+                if (options.title != null) b3.setTitleText(options.title);
+                if (options.doneText != null) b3.setPositiveButtonText(options.doneText);
+                if (options.cancelText != null) b3.setNegativeButtonText(options.cancelText);
+                picker = b3.build();
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        if (picker == null) {
+            callback.reject(lastError != null ? lastError.getMessage() : "Failed to open time picker");
             return;
         }
 
