@@ -19,12 +19,14 @@ public class DatePicker {
     private DatePickerOptions options;
     private Context context;
     private int theme;
+    private int timePickerTheme;
 
     public DatePicker(DatePickerOptions options, Context context) {
         calendar = Calendar.getInstance();
         this.options = options;
         this.context = context;
         theme = DatePickerTheme.get(this.options.theme, context);
+        timePickerTheme = DatePickerTheme.getForTimePicker(this.options.theme, context);
 
         if (this.options.locale != null) {
             Locale locale = new Locale(this.options.locale);
@@ -61,8 +63,6 @@ public class DatePicker {
         // Build MaterialTimePicker with minimal theming to avoid crashes on OEM/custom themes
         MaterialTimePicker picker = null;
         Exception lastError = null;
-
-        int timePickerTheme = DatePickerTheme.getForTimePicker(this.options.theme, context);
 
         // Attempt 1: build normally (no explicit full dialog theme)
         try {
