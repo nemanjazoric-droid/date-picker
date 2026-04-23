@@ -12,6 +12,18 @@
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
+    <!-- ThemeOverlay styles for MaterialTimePicker (light / dark) -->
+    <style name="MaterialTimePickerLight" parent="ThemeOverlay.MaterialComponents.TimePicker" />
+
+    <style name="MaterialTimePickerDark" parent="ThemeOverlay.MaterialComponents.TimePicker.Clock">
+        <item name="colorSurface">#FF121212</item>
+        <item name="colorOnSurface">#FFFFFFFF</item>
+        <item name="colorOnSurfaceVariant">#FFFFFFFF</item>
+        <item name="colorPrimary">#FF90CAF9</item>
+        <item name="colorOnPrimary">#FF000000</item>
+        <item name="android:colorBackground">#FF121212</item>
+    </style>
+
     <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
     <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
     <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
