@@ -62,6 +62,8 @@ public class DatePicker {
         MaterialTimePicker picker = null;
         Exception lastError = null;
 
+        int timePickerTheme = DatePickerTheme.getForTimePicker(this.options.theme, context);
+
         // Attempt 1: build normally (no explicit full dialog theme)
         try {
             MaterialTimePicker.Builder b1 = new MaterialTimePicker.Builder();
@@ -71,7 +73,7 @@ public class DatePicker {
             if (options.title != null) b1.setTitleText(options.title);
             // Do NOT set custom positive/negative texts; not supported across all Material versions.
             // Do NOT apply full dialog themes; TimePicker expects a ThemeOverlay and wrong theme may crash.
-            if (theme != 0) b1.setTheme(theme);
+            if (timePickerTheme != 0) b1.setTheme(timePickerTheme);
             picker = b1.build();
         } catch (Exception e) {
             lastError = e;
