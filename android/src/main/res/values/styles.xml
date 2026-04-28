@@ -12,6 +12,16 @@
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
+    <style name="LightTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerStyle">@style/Widget.MaterialComponents.TimePicker</item>
+    </style>
+
+    <style name="DarkTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerStyle">@style/Widget.MaterialComponents.TimePicker</item>
+    </style>
+
     <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
     <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
     <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
