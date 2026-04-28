@@ -88,7 +88,7 @@ public class DatePicker {
                 b2.setMinute(calendar.get(Calendar.MINUTE));
                 if (options.title != null) b2.setTitleText(options.title);
                 // Leave other settings to defaults for compatibility
-//                 b2.setTheme(R.style.MaterialLightTheme);
+                b2.setTheme(R.style.MyCustomLightTimePicker);
                 picker = b2.build();
             } catch (Exception e) {
                 lastError = e;
