@@ -33,10 +33,10 @@ public class DatePickerTheme {
 
     public static int getTimePickerTheme(String theme, Context context) {
         if (theme == null || theme.isEmpty()) {
-            return R.style.SafeTimePickerTheme;
+            return R.style.MyCustomLightTimePicker;
         }
         int result = context.getResources().getIdentifier(theme, "style", context.getPackageName());
         if (result != 0) return result;
-        return R.style.SafeTimePickerTheme;
+        return R.style.MyCustomLightTimePicker;
     }
 }
