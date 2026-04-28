@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -48,39 +49,56 @@ public class DatePicker {
      * - Returns the formatted date string on positive, or null on negative/cancel.
      */
     public void launchTime(DatePickerResolve callback) {
+        // Extract options from Angular payload
         boolean is24h = call.getBoolean("is24h", false);
+        String title = call.getString("title", "Select Time");
 
-        // Use current time as default
-        java.util.Calendar calendar = java.util.Calendar.getInstance();
-        int currentHour = calendar.get(java.util.Calendar.HOUR_OF_DAY);
-        int currentMinute = calendar.get(java.util.Calendar.MINUTE);
+        int timeFormat = is24h ? TimeFormat.CLOCK_24H : TimeFormat.CLOCK_12H;
 
-        // Get the Capacitor Activity
-        androidx.appcompat.app.AppCompatActivity activity = getActivity();
+        // Default to current time
+        Calendar calendar = Calendar.getInstance();
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        AppCompatActivity activity = getActivity();
         if (activity == null || activity.isFinishing()) {
-            call.reject("Native activity is not ready.");
+            call.reject("Activity is not ready.");
             return;
         }
 
-        // Run on UI Thread
+        // Must run on UI Thread
         activity.runOnUiThread(() -> {
-            // Use the standard OS TimePickerDialog instead of MaterialTimePicker
-            android.app.TimePickerDialog timePickerDialog = new android.app.TimePickerDialog(
-                activity,
-                (view, hourOfDay, minute) -> {
-                    com.getcapacitor.JSObject ret = new com.getcapacitor.JSObject();
-                    ret.put("hour", hourOfDay);
-                    ret.put("minute", minute);
+            try {
+                // THE FIX: Directly reference the compiled Material library theme.
+                // This ignores your local styles.xml and prevents missing-attribute crashes.
+                int defaultTheme = R.style.SafeTimePickerTheme;
+
+                MaterialTimePicker picker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(timeFormat)
+                        .setHour(currentHour)
+                        .setMinute(currentMinute)
+                        .setTitleText(title)
+                        .setTheme(defaultTheme)
+                        .build();
+
+                // Handle success
+                picker.addOnPositiveButtonClickListener(v -> {
+                    JSObject ret = new JSObject();
+                    ret.put("hour", picker.getHour());
+                    ret.put("minute", picker.getMinute());
                     call.resolve(ret);
-                },
-                currentHour,
-                currentMinute,
-                is24h
-            );
-            // Handle cancellations
-            timePickerDialog.setOnCancelListener(dialog -> call.resolve(null));
-            // Show the dialog
-            timePickerDialog.show();
+                });
+
+                // Handle dismissal/cancellation
+                picker.addOnNegativeButtonClickListener(v -> call.resolve(null));
+                picker.addOnCancelListener(dialog -> call.resolve(null));
+
+                // Launch the fragment
+                picker.show(activity.getSupportFragmentManager(), "MATERIAL_TIME_PICKER");
+
+            } catch (Exception e) {
+                call.reject("Android Error: " + e.getMessage());
+            }
         });
     }
 
