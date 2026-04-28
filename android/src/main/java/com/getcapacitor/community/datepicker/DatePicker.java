@@ -19,12 +19,14 @@ public class DatePicker {
     private DatePickerOptions options;
     private Context context;
     private int theme;
+    private int timeTheme;
 
     public DatePicker(DatePickerOptions options, Context context) {
         calendar = Calendar.getInstance();
         this.options = options;
         this.context = context;
         theme = DatePickerTheme.get(this.options.theme, context);
+        timeTheme = DatePickerTheme.getTimePickerTheme(this.options.theme, context);
 
         if (this.options.locale != null) {
             Locale locale = new Locale(this.options.locale);
@@ -71,7 +73,7 @@ public class DatePicker {
             if (options.title != null) b1.setTitleText(options.title);
             // Do NOT set custom positive/negative texts; not supported across all Material versions.
             // Do NOT apply full dialog themes; TimePicker expects a ThemeOverlay and wrong theme may crash.
-//             if (theme != 0) b1.setTheme(theme);
+            if (theme != 0) b1.setTheme(timeTheme);
             picker = b1.build();
         } catch (Exception e) {
             lastError = e;
