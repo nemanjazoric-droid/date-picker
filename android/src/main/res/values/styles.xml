@@ -15,17 +15,4 @@
     <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
     <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
     <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
-
-    <style name="MyCustomLightTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
-        <!-- Main accent (clock hands, selected number background, buttons text) -->
-        <item name="colorPrimary">#6200EE</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <!-- Dialog background -->
-        <item name="colorSurface">#FFFFFF</item>
-        <item name="colorOnSurface">#212121</item>
-        <!-- Optional: customize clock face background -->
-        <item name="materialClockStyle">@style/Widget.MaterialComponents.MaterialTimePicker.Clock</item>
-        <!-- Optional: customize the OK / Cancel buttons -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
-    </style>
 </resources>

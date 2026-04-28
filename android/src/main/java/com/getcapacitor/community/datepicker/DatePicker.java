@@ -73,7 +73,7 @@ public class DatePicker {
             if (options.title != null) b1.setTitleText(options.title);
             // Do NOT set custom positive/negative texts; not supported across all Material versions.
             // Do NOT apply full dialog themes; TimePicker expects a ThemeOverlay and wrong theme may crash.
-            if (theme != 0) b1.setTheme(timeTheme);
+            if (timeTheme != 0) b1.setTheme(timeTheme);
             picker = b1.build();
         } catch (Exception e) {
             lastError = e;
@@ -88,7 +88,7 @@ public class DatePicker {
                 b2.setMinute(calendar.get(Calendar.MINUTE));
                 if (options.title != null) b2.setTitleText(options.title);
                 // Leave other settings to defaults for compatibility
-                b2.setTheme(R.style.MyCustomLightTimePicker);
+                b2.setTheme(R.style.LightTimePicker);
                 picker = b2.build();
             } catch (Exception e) {
                 lastError = e;
