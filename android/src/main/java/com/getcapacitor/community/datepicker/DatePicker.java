@@ -74,7 +74,7 @@ public class DatePicker {
             if (theme != 0) {
                 b1.setTheme(theme);
             } else {
-                b1.setTheme(R.style.MyCustomLightTimePicker);
+                b1.setTheme(R.style.SafeTimePickerTheme);
             }
             picker = b1.build();
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class DatePicker {
                 b2.setMinute(calendar.get(Calendar.MINUTE));
                 if (options.title != null) b2.setTitleText(options.title);
                 // Leave other settings to defaults for compatibility
-                b2.setTheme(R.style.MyCustomLightTimePicker);
+                b2.setTheme(R.style.SafeTimePickerTheme);
                 picker = b2.build();
             } catch (Exception e) {
                 lastError = e;

@@ -15,4 +15,11 @@
     <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
     <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
     <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
+
+    <style name="SafeTimePickerTheme" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="colorPrimary">#3880ff</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSurface">#ffffff</item>
+        <item name="colorOnSurface">#000000</item>
+    </style>
 </resources>
