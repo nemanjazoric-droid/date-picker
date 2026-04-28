@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import androidx.fragment.app.FragmentActivity;
-import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -49,57 +48,93 @@ public class DatePicker {
      * - Returns the formatted date string on positive, or null on negative/cancel.
      */
     public void launchTime(DatePickerResolve callback) {
-        // Extract options from Angular payload
-        boolean is24h = call.getBoolean("is24h", false);
-        String title = call.getString("title", "Select Time");
+        // Initialize calendar with provided date if available
+        if (options.date != null) {
+            calendar.setTime(options.date);
+        }
 
-        int timeFormat = is24h ? TimeFormat.CLOCK_24H : TimeFormat.CLOCK_12H;
+        // Determine 12/24h format expected by MaterialTimePicker
+        int timeFormat = options.is24h
+            ? TimeFormat.CLOCK_24H
+            : TimeFormat.CLOCK_12H;
 
-        // Default to current time
-        Calendar calendar = Calendar.getInstance();
-        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-        int currentMinute = calendar.get(Calendar.MINUTE);
+        // Build MaterialTimePicker with minimal theming to avoid crashes on OEM/custom themes
+        MaterialTimePicker picker = null;
+        Exception lastError = null;
 
-        AppCompatActivity activity = getActivity();
-        if (activity == null || activity.isFinishing()) {
-            call.reject("Activity is not ready.");
+        // Attempt 1: build normally (no explicit full dialog theme)
+        try {
+            MaterialTimePicker.Builder b1 = new MaterialTimePicker.Builder();
+            b1.setTimeFormat(timeFormat);
+            b1.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+            b1.setMinute(calendar.get(Calendar.MINUTE));
+            if (options.title != null) b1.setTitleText(options.title);
+            // Do NOT set custom positive/negative texts; not supported across all Material versions.
+            // Do NOT apply full dialog themes; TimePicker expects a ThemeOverlay and wrong theme may crash.
+//             if (theme != 0) b1.setTheme(theme);
+            picker = b1.build();
+        } catch (Exception e) {
+            lastError = e;
+        }
+
+        // Attempt 2: retry with a fresh builder as a minimal fallback
+        if (picker == null) {
+            try {
+                MaterialTimePicker.Builder b2 = new MaterialTimePicker.Builder();
+                b2.setTimeFormat(timeFormat);
+                b2.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+                b2.setMinute(calendar.get(Calendar.MINUTE));
+                if (options.title != null) b2.setTitleText(options.title);
+                // Leave other settings to defaults for compatibility
+//                 b2.setTheme(R.style.MaterialLightTheme);
+                picker = b2.build();
+            } catch (Exception e) {
+                lastError = e;
+            }
+        }
+
+        if (picker == null) {
+            // If both attempts failed, reject with the last error message (if any)
+            callback.reject(lastError != null ? lastError.getMessage() : "Failed to open time picker");
             return;
         }
 
-        // Must run on UI Thread
-        activity.runOnUiThread(() -> {
-            try {
-                // THE FIX: Directly reference the compiled Material library theme.
-                // This ignores your local styles.xml and prevents missing-attribute crashes.
-                int defaultTheme = R.style.SafeTimePickerTheme;
-
-                MaterialTimePicker picker = new MaterialTimePicker.Builder()
-                        .setTimeFormat(timeFormat)
-                        .setHour(currentHour)
-                        .setMinute(currentMinute)
-                        .setTitleText(title)
-                        .setTheme(defaultTheme)
-                        .build();
-
-                // Handle success
-                picker.addOnPositiveButtonClickListener(v -> {
-                    JSObject ret = new JSObject();
-                    ret.put("hour", picker.getHour());
-                    ret.put("minute", picker.getMinute());
-                    call.resolve(ret);
-                });
-
-                // Handle dismissal/cancellation
-                picker.addOnNegativeButtonClickListener(v -> call.resolve(null));
-                picker.addOnCancelListener(dialog -> call.resolve(null));
-
-                // Launch the fragment
-                picker.show(activity.getSupportFragmentManager(), "MATERIAL_TIME_PICKER");
-
-            } catch (Exception e) {
-                call.reject("Android Error: " + e.getMessage());
-            }
+        // Listeners: resolve on positive, return null on negative/cancel
+        MaterialTimePicker finalPicker = picker;
+        picker.addOnPositiveButtonClickListener(v -> {
+            int hour = finalPicker.getHour();
+            int minute = finalPicker.getMinute();
+            // Keep current Y/M/D but update H/M with chosen values
+            calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                hour,
+                minute
+            );
+            // Format according to options.format and resolve
+            callback.resolve(Parse.dateToString(calendar.getTime(), options.format));
         });
+        picker.addOnNegativeButtonClickListener(v -> callback.resolve(null));
+        picker.addOnCancelListener(dialog -> callback.resolve(null));
+
+        // Show via FragmentActivity on the UI thread to avoid lifecycle crashes
+        androidx.fragment.app.FragmentActivity activity = toFragmentActivity(context);
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            callback.resolve(null);
+            return;
+        }
+        try {
+            activity.runOnUiThread(() -> {
+                try {
+                    finalPicker.show(activity.getSupportFragmentManager(), "TIME_PICKER");
+                } catch (Exception e) {
+                    callback.reject(e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            callback.reject(e.getMessage());
+        }
     }
 
     /**
