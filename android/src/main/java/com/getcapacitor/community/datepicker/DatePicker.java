@@ -77,10 +77,8 @@ public class DatePicker {
                 currentMinute,
                 is24h
             );
-
             // Handle cancellations
             timePickerDialog.setOnCancelListener(dialog -> call.resolve(null));
-
             // Show the dialog
             timePickerDialog.show();
         });
