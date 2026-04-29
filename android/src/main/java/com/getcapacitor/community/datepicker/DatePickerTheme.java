@@ -12,10 +12,10 @@ public class DatePickerTheme {
 
         switch (theme) {
           case "dark":
-              result = R.style.MaterialDarkTheme;
+              result = R.style.DarkDatePicker;
               break;
           case "light":
-              result = R.style.MaterialLightTheme;
+              result = R.style.LightDatePicker;
               break;
           case "legacyDark":
               result = R.style.SpinnerDarkTheme;
@@ -24,7 +24,7 @@ public class DatePickerTheme {
               result = R.style.SpinnerLightTheme;
               break;
           default:
-              result = R.style.MaterialLightTheme;
+              result = R.style.LightDatePicker;
               break;
         }
 

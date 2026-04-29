@@ -2,12 +2,12 @@
     <!-- Safe full dialog themes for MaterialDatePicker.
          Use full MaterialComponents dialog themes so all required base attributes resolve,
          and explicitly apply the MaterialCalendar overlay via materialCalendarTheme. -->
-    <style name="MaterialLightTheme" parent="Theme.MaterialComponents.Light.Dialog">
+    <style name="LightDatePicker" parent="Theme.MaterialComponents.Light.Dialog">
         <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>
 
-    <style name="MaterialDarkTheme" parent="Theme.MaterialComponents.Dialog">
+    <style name="DarkDatePicker" parent="Theme.MaterialComponents.Dialog">
         <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
         <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
     </style>

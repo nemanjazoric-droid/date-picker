@@ -195,7 +195,7 @@ public class DatePicker {
                 if (options.title != null) b2.setTitleText(options.title);
                 if (options.doneText != null) b2.setPositiveButtonText(options.doneText);
                 if (options.cancelText != null) b2.setNegativeButtonText(options.cancelText);
-                b2.setTheme(R.style.MaterialLightTheme);
+                b2.setTheme(R.style.LightDatePicker);
                 datePicker = b2.build();
             } catch (Exception e) {
                 lastError = e;
