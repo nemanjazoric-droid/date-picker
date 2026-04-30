@@ -20,11 +20,11 @@
     <item name="android:background">@drawable/splash</item>
   </style>
 
-  <style name="MyCustomDatePicker" parent="android:Theme.Material.Dialog.Alert">
+  <style name="DarkDatePicker" parent="android:Theme.Material.Dialog.Alert">
     <item name="android:colorAccent">@color/colorPrimary</item>
   </style>
 
-  <style name="MyCustomLightDatePicker" parent="android:Theme.Material.Light.Dialog.Alert">
+  <style name="LightDatePicker" parent="android:Theme.Material.Light.Dialog.Alert">
     <item name="android:colorAccent">@color/colorPrimary</item>
   </style>
 </resources>

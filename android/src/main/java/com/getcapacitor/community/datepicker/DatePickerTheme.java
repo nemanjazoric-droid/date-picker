@@ -1,6 +1,7 @@
 package com.getcapacitor.community.datepicker;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 public class DatePickerTheme {
 
@@ -10,23 +11,32 @@ public class DatePickerTheme {
         if (result != 0) return result;
 
         switch (theme) {
-            case "dark":
-                result = R.style.MateriaDarkTheme;
-                break;
-            case "light":
-                result = R.style.MaterialLightTheme;
-                break;
-            case "legacyDark":
-                result = R.style.SpinnerDarkTheme;
-                break;
-            case "legacyLight":
-                result = R.style.SpinnerLightTheme;
-                break;
-            default:
-                result = R.style.MaterialLightTheme;
-                break;
+          case "dark":
+              result = R.style.DarkDatePicker;
+              break;
+          case "light":
+              result = R.style.LightDatePicker;
+              break;
+          case "legacyDark":
+              result = R.style.SpinnerDarkTheme;
+              break;
+          case "legacyLight":
+              result = R.style.SpinnerLightTheme;
+              break;
+          default:
+              result = R.style.LightDatePicker;
+              break;
         }
 
-        return result;
+          return result;
+    }
+
+    public static int getTimePickerTheme(String theme, Context context) {
+        if (theme == null || theme.isEmpty()) {
+            return R.style.LightTimePicker;
+        }
+        int result = context.getResources().getIdentifier(theme, "style", context.getPackageName());
+        if (result != 0) return result;
+        return R.style.LightTimePicker;
     }
 }

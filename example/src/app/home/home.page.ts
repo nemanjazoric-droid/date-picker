@@ -48,7 +48,7 @@ export class HomePage implements OnInit {
       label: 'Legacy Light Theme',
     },
     {
-      value: 'MyCustomLightDatePicker',
+      value: 'LightDatePicker',
       label: 'My Custom Theme',
     },
   ];

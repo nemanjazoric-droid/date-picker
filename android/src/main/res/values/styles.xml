@@ -1,6 +1,28 @@
 <resources>
-    <style name="MateriaDarkTheme" parent="android:Theme.Material.Dialog.Alert"></style>
-    <style name="MaterialLightTheme" parent="android:Theme.Material.Light.Dialog.Alert"></style>
-    <style name="SpinnerDarkTheme" parent="android:Theme.Holo.Dialog"></style>
-    <style name="SpinnerLightTheme" parent="android:Theme.Holo.Light.Dialog"></style>
+    <!-- Safe full dialog themes for MaterialDatePicker.
+         Use full MaterialComponents dialog themes so all required base attributes resolve,
+         and explicitly apply the MaterialCalendar overlay via materialCalendarTheme. -->
+    <style name="LightDatePicker" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+    </style>
+
+    <style name="DarkDatePicker" parent="Theme.MaterialComponents.Dialog">
+        <item name="materialCalendarTheme">@style/ThemeOverlay.MaterialComponents.MaterialCalendar</item>
+        <item name="materialCalendarStyle">@style/Widget.MaterialComponents.MaterialCalendar</item>
+    </style>
+
+    <style name="LightTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerStyle">@style/Widget.MaterialComponents.TimePicker</item>
+    </style>
+
+    <style name="DarkTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="materialTimePickerTheme">@style/ThemeOverlay.MaterialComponents.TimePicker</item>
+        <item name="materialTimePickerStyle">@style/Widget.MaterialComponents.TimePicker</item>
+    </style>
+
+    <!-- Legacy spinner themes kept for compatibility with TimePickerDialog -->
+    <style name="SpinnerDarkTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
+    <style name="SpinnerLightTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog" />
 </resources>
