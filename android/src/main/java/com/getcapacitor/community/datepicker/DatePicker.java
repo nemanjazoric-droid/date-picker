@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import androidx.fragment.app.FragmentActivity;
 import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBetween;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
@@ -166,6 +167,11 @@ public class DatePicker {
         }
         if (options.max != null) {
             constraintsBuilder.setEnd(toUtcMidnight(options.max));
+        }
+        if (options.min != null || options.max != null) {
+            long start = options.min != null ? toUtcMidnight(options.min) : Long.MIN_VALUE;
+            long end   = options.max != null ? toUtcMidnight(options.max) : Long.MAX_VALUE;
+            constraintsBuilder.setValidator(DateValidatorPointBetween.between(start, end));
         }
 
         // Build MaterialDatePicker with a few safe fallbacks (theme -> bundled light -> no theme)
